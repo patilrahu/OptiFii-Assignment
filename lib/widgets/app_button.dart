@@ -30,7 +30,7 @@ class AppButton extends StatelessWidget {
     return InkWell(
       onTap: isDisable ? null : onPressed,
       child: Container(
-        margin: const EdgeInsets.only(top: 30),
+        margin: const EdgeInsets.only(top: 30, bottom: 20),
         alignment: Alignment.center,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(borderRadius ?? 10),

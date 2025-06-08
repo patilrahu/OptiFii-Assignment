@@ -34,6 +34,14 @@ class _AppDropdownState extends State<AppDropdown>
     });
   }
 
+  @override
+  void didUpdateWidget(covariant AppDropdown oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.selectedOption != widget.selectedOption) {
+      _controller.text = widget.selectedOption ?? '';
+    }
+  }
+
   void _toggleDropdown() {
     // dismissKeyBoard(context);
     setState(() {

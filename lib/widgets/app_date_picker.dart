@@ -84,6 +84,14 @@ class _AppDatePickerState extends State<AppDatePicker> {
   }
 
   @override
+  void didUpdateWidget(covariant AppDatePicker oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.defaultDate != widget.defaultDate) {
+      _datePickerController.text = widget.defaultDate ?? '';
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(top: 30),

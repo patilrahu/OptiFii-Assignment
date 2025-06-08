@@ -45,6 +45,8 @@ class _ReburshipmentRequestState extends State<ReburshipmentRequest> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         setData();
       });
+    } else {
+      _clearAllField();
     }
   }
 
@@ -92,7 +94,13 @@ class _ReburshipmentRequestState extends State<ReburshipmentRequest> {
               visible: !(widget.isEditDetailRequest ?? false),
               child: GestureDetector(
                 onTap: () {
-                  NavigationHelper.push(context, const SelectTransaction());
+                  NavigationHelper.push(
+                    context,
+                    const SelectTransaction(),
+                    onResult: (result) {
+                      _clearAllField();
+                    },
+                  );
                 },
                 child: appCard(
                   context,
@@ -153,9 +161,7 @@ class _ReburshipmentRequestState extends State<ReburshipmentRequest> {
               () => AppDropdown(
                   options: StringConstant.selectCategoryOption,
                   onChanged: (value) {
-                    setState(() {
-                      _controller.selectedCategory.value = value;
-                    });
+                    _controller.selectedCategory.value = value;
                   },
                   selectedOption: _controller.selectedCategory.value,
                   placeholder: StringConstant.selectCategory),
@@ -171,9 +177,7 @@ class _ReburshipmentRequestState extends State<ReburshipmentRequest> {
             Obx(() => AppDatePicker(
                   hintTextDate: StringConstant.dateText,
                   onDateSelected: (date) {
-                    setState(() {
-                      _controller.selectedDate.value = date.toString();
-                    });
+                    _controller.selectedDate.value = date.toString();
                   },
                   defaultDate: _controller.selectedDate.value,
                 )),
@@ -251,8 +255,7 @@ class _ReburshipmentRequestState extends State<ReburshipmentRequest> {
                         _controller.isLoading.value = false;
                         _clearAllField();
                         // ignore: use_build_context_synchronously
-                        NavigationHelper.push(
-                            context, const MultipleReburshipment());
+                        NavigationHelper.push(context, MultipleReburshipment());
                       } catch (e) {
                         AppLogger.error(e.toString());
                         _controller.isLoading.value = false;

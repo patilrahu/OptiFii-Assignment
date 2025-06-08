@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
 
 class NavigationHelper {
-  static Future<void> push(BuildContext context, Widget screen) async {
+  static Future<void> push(
+    BuildContext context,
+    Widget screen, {
+    void Function(dynamic result)? onResult,
+  }) async {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => screen),
-    );
+    ).then((value) {
+      if (onResult != null) {
+        onResult(value);
+      }
+    });
+    ;
   }
 
   static Future<void> pushRemoveUntil(

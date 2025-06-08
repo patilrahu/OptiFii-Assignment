@@ -1,0 +1,27 @@
+import 'package:flutter/material.dart';
+
+class NavigationHelper {
+  static Future<void> push(BuildContext context, Widget screen) async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => screen),
+    );
+  }
+
+  static Future<void> pushRemoveUntil(
+      BuildContext context, Widget screen) async {
+    await Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => screen),
+      (route) => false,
+    );
+  }
+
+  static void pop(BuildContext context) {
+    Navigator.pop(context);
+  }
+
+  static void popBottomSheet(BuildContext context) {
+    Navigator.of(context, rootNavigator: true).pop();
+  }
+}

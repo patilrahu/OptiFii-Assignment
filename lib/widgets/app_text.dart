@@ -9,11 +9,13 @@ class AppText extends StatefulWidget {
   final FontWeight? fontWeight;
   final Color? color;
   final TextAlign? textAlign;
+  final Paint? foreground;
   final int? maxLines;
   final TextOverflow? overflow;
   AppText({
     super.key,
     required this.text,
+    this.foreground,
     this.fontSize,
     this.fontFamily,
     this.fontWeight,
@@ -33,11 +35,11 @@ class _AppTextState extends State<AppText> {
     return Text(
       widget.text,
       style: TextStyle(
-        fontSize: widget.fontSize,
-        fontFamily: widget.fontFamily ?? StringConstant.appFontFamily,
-        fontWeight: widget.fontWeight,
-        color: widget.color,
-      ),
+          fontSize: widget.fontSize,
+          fontFamily: widget.fontFamily ?? StringConstant.appFontFamily,
+          fontWeight: widget.fontWeight,
+          color: widget.color,
+          foreground: widget.foreground),
       textAlign: widget.textAlign,
       maxLines: widget.maxLines,
       overflow: widget.overflow,

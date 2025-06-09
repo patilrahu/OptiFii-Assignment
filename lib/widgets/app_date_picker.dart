@@ -26,8 +26,8 @@ class _AppDatePickerState extends State<AppDatePicker> {
     DateTime defaultFirstDate = DateTime(today.year - 100);
     DateTime defaultLastDate = DateTime(today.year + 50);
     setState(() {
-      today = widget.defaultDate != null
-          ? DateTime.parse(widget.defaultDate!)
+      today = widget.defaultDate != ''
+          ? DateFormat('yyyy-MM-dd HH:mm:ss').parse(widget.defaultDate!)
           : DateTime.now();
     });
 

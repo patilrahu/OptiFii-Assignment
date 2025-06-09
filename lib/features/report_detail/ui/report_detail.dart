@@ -127,16 +127,25 @@ class _ReportDetailState extends State<ReportDetail> {
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
                           ),
-                          Row(
-                            children: [
-                              Image.asset(ImageConstant.addIcon),
-                              AppText(
-                                text: StringConstant.addExpenseText,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400,
-                                color: HexColor(ColorCode.primaryColor),
-                              ),
-                            ],
+                          GestureDetector(
+                            onTap: () {
+                              // NavigationHelper.push(
+                              //     context,
+                              //     ReburshipmentRequest(
+                              //       isEditDetailRequest: false,
+                              //     ));
+                            },
+                            child: Row(
+                              children: [
+                                Image.asset(ImageConstant.addIcon),
+                                AppText(
+                                  text: StringConstant.addExpenseText,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                  color: HexColor(ColorCode.primaryColor),
+                                ),
+                              ],
+                            ),
                           )
                         ],
                       ),

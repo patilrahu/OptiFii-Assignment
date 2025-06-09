@@ -53,15 +53,15 @@ class _ReburshipmentRequestState extends State<ReburshipmentRequest> {
   void setData() {
     final data = widget.data;
     if (data != null) {
-      setState(() {
-        _controller.walletController.text = data['wallet'] ?? '';
-        _controller.addAmountController.text = data['addAmount'] ?? '';
-        _controller.purposeController.text = data['purpose'] ?? '';
-        _controller.mearchantController.text = data['mearchant'] ?? '';
-        _controller.remarkController.text = data['remark'] ?? '';
-        _controller.selectedCategory.value = data['selectedCategory'] ?? '';
-        _controller.selectedDate.value = data['selectedDate'] ?? '';
-      });
+      // setState(() {
+      _controller.walletController.text = data['wallet'] ?? '';
+      _controller.addAmountController.text = data['addAmount'] ?? '';
+      _controller.purposeController.text = data['purpose'] ?? '';
+      _controller.mearchantController.text = data['mearchant'] ?? '';
+      _controller.remarkController.text = data['remark'] ?? '';
+      _controller.selectedCategory.value = data['selectedCategory'] ?? '';
+      _controller.selectedDate.value = data['selectedDate'] ?? '';
+      // });
     }
   }
 
@@ -215,7 +215,8 @@ class _ReburshipmentRequestState extends State<ReburshipmentRequest> {
                           SharedPreferenceHelper.reportReumburshipment,
                           jsonEncode(updatedList));
                       NavigationHelper.pop(context);
-                      NavigationHelper.push(context, const ReportDetail());
+                      NavigationHelper.pushReplacement(
+                          context, const ReportDetail());
                     },
                         StringConstant.addToReportText,
                         AddReportWidget(
@@ -255,7 +256,13 @@ class _ReburshipmentRequestState extends State<ReburshipmentRequest> {
                         _controller.isLoading.value = false;
                         _clearAllField();
                         // ignore: use_build_context_synchronously
-                        NavigationHelper.push(context, MultipleReburshipment());
+                        NavigationHelper.push(
+                          context,
+                          const MultipleReburshipment(),
+                          onResult: (result) {
+                            _clearAllField();
+                          },
+                        );
                       } catch (e) {
                         AppLogger.error(e.toString());
                         _controller.isLoading.value = false;

@@ -5,6 +5,7 @@ import 'package:hexcolor/hexcolor.dart';
 import 'package:remburshiment_app/constant/color_code.dart';
 import 'package:remburshiment_app/constant/image_constant.dart';
 import 'package:remburshiment_app/constant/string_constant.dart';
+import 'package:remburshiment_app/features/multiple_reburshipment/view_model/multiple_reburshipment_view_model.dart';
 import 'package:remburshiment_app/features/reburshipment_request/ui/reburshipment_request.dart';
 import 'package:remburshiment_app/features/report_detail/view_model/report_detail_view_model.dart';
 import 'package:remburshiment_app/helper/app_date_helper.dart';
@@ -15,8 +16,13 @@ import 'package:remburshiment_app/widgets/app_text.dart';
 
 class MultipleBuildCard extends StatefulWidget {
   final Map<String, dynamic>? data;
+  MultipleReburshipmentViewModel? multipleReburshipmentViewModel;
   ReportDetailViewModel? reportDetailViewModel;
-  MultipleBuildCard({super.key, this.data, this.reportDetailViewModel});
+  MultipleBuildCard(
+      {super.key,
+      this.data,
+      this.reportDetailViewModel,
+      this.multipleReburshipmentViewModel});
 
   @override
   State<MultipleBuildCard> createState() => _MultipleBuildCardState();
@@ -151,13 +157,24 @@ class _MultipleBuildCardState extends State<MultipleBuildCard> {
                     ),
                     GestureDetector(
                       onTap: () async {
-                        widget.reportDetailViewModel?.reportReburshipmentList
-                            .remove(widget.data);
-                        await SharedPreferenceHelper.save(
-                          SharedPreferenceHelper.reportReumburshipment,
-                          jsonEncode(widget
-                              .reportDetailViewModel?.reportReburshipmentList),
-                        );
+                        if (widget.multipleReburshipmentViewModel != null) {
+                          widget
+                              .multipleReburshipmentViewModel?.reburshipmentList
+                              .remove(widget.data);
+                          await SharedPreferenceHelper.save(
+                            SharedPreferenceHelper.storeReumburshipment,
+                            jsonEncode(widget.multipleReburshipmentViewModel
+                                ?.reburshipmentList),
+                          );
+                        } else {
+                          widget.reportDetailViewModel?.reportReburshipmentList
+                              .remove(widget.data);
+                          await SharedPreferenceHelper.save(
+                            SharedPreferenceHelper.reportReumburshipment,
+                            jsonEncode(widget.reportDetailViewModel
+                                ?.reportReburshipmentList),
+                          );
+                        }
                       },
                       child: Image.asset(
                         ImageConstant.deleteIcon,

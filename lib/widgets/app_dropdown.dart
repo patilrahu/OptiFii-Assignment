@@ -29,9 +29,9 @@ class _AppDropdownState extends State<AppDropdown>
   @override
   void initState() {
     super.initState();
-    setState(() {
-      _controller.text = widget.selectedOption ?? '';
-    });
+    // setState(() {
+    _controller.text = widget.selectedOption ?? '';
+    // });
   }
 
   @override

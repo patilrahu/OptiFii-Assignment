@@ -14,6 +14,7 @@ class ReburshimentRequestViewModel extends GetxController {
   RxnString selectedDate = RxnString();
   RxnString selectedCategory = RxnString();
   RxBool isLoading = false.obs;
+  RxBool isFileUploadLoading = false.obs;
 
   Future<List<dynamic>?> getReburshipmentList() async {
     final raw = await SharedPreferenceHelper.getValue(

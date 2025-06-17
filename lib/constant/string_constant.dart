@@ -15,7 +15,7 @@ class StringConstant {
   static String addAmountText = "Add amount";
   static String selectCategory = "Select category";
   static String purPoseText = "Purpose";
-  static String marchantName = "Marchant name";
+  static String marchantName = "Merchant name";
   static String dateText = "Date";
   static String remarkText = "Remark (optional)";
   static String saveBtnText = "Save";

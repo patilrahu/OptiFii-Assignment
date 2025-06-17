@@ -4,16 +4,40 @@ import 'package:hexcolor/hexcolor.dart';
 import 'package:remburshiment_app/constant/color_code.dart';
 import 'package:remburshiment_app/constant/image_constant.dart';
 import 'package:remburshiment_app/constant/string_constant.dart';
+import 'package:remburshiment_app/features/reburshipment_request/ui/camera_screen.dart';
+import 'package:remburshiment_app/features/reburshipment_request/view_model/reburshiment_request_view_model.dart';
+import 'package:remburshiment_app/helper/permission_helper.dart';
+import 'package:remburshiment_app/helper/upload_bill.dart';
+import 'package:remburshiment_app/utils/app_logger.dart';
+import 'package:remburshiment_app/utils/app_navigation.dart';
 import 'package:remburshiment_app/widgets/app_text.dart';
 
 class FileUploadWidget extends StatefulWidget {
-  const FileUploadWidget({super.key});
+  ReburshimentRequestViewModel reburshimentRequestViewModel;
+  final void Function(Map<String, String>) onBillProcessed;
+  FileUploadWidget(
+      {super.key,
+      required this.reburshimentRequestViewModel,
+      required this.onBillProcessed});
 
   @override
   State<FileUploadWidget> createState() => _FileUploadWidgetState();
 }
 
 class _FileUploadWidgetState extends State<FileUploadWidget> {
+  Future<void> _uploadAndProcessBill() async {
+    widget.reburshimentRequestViewModel.isFileUploadLoading.value = true;
+    final file = await UploadBill.pickBillImage();
+    if (file != null) {
+      Map<String, String> fetchText = await UploadBill.processBillImage(file);
+      widget.onBillProcessed(fetchText);
+      widget.reburshimentRequestViewModel.isFileUploadLoading.value = false;
+    } else {
+      widget.reburshimentRequestViewModel.isFileUploadLoading.value = false;
+      AppLogger.error("No image selected.");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -31,7 +55,9 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
             children: [
               Expanded(
                 child: GestureDetector(
-                  onTap: () {},
+                  onTap: () async {
+                    _uploadAndProcessBill();
+                  },
                   child: _dashContainerWidget(context, ImageConstant.uploadIcon,
                       StringConstant.uploadBillText),
                 ),
@@ -45,7 +71,26 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
               ),
               Expanded(
                 child: GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    NavigationHelper.push(context, CameraScreen(
+                      image: (selectedImage) async {
+                        widget.reburshimentRequestViewModel.isFileUploadLoading
+                            .value = true;
+
+                        if (selectedImage != null) {
+                          Map<String, String> fetchText =
+                              await UploadBill.processBillImage(selectedImage);
+                          widget.onBillProcessed(fetchText);
+                          widget.reburshimentRequestViewModel
+                              .isFileUploadLoading.value = false;
+                        } else {
+                          widget.reburshimentRequestViewModel
+                              .isFileUploadLoading.value = false;
+                          AppLogger.error("No image selected.");
+                        }
+                      },
+                    ));
+                  },
                   child: _dashContainerWidget(context, ImageConstant.scanIcon,
                       StringConstant.scanUploadText),
                 ),

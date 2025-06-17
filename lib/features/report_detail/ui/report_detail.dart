@@ -129,11 +129,12 @@ class _ReportDetailState extends State<ReportDetail> {
                           ),
                           GestureDetector(
                             onTap: () {
-                              // NavigationHelper.push(
-                              //     context,
-                              //     ReburshipmentRequest(
-                              //       isEditDetailRequest: false,
-                              //     ));
+                              // NavigationHelper.pop(context);
+                              NavigationHelper.pushReplacement(
+                                  context,
+                                  ReburshipmentRequest(
+                                    isEditDetailRequest: false,
+                                  ));
                             },
                             child: Row(
                               children: [

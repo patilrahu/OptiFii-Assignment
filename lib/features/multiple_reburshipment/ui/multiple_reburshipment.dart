@@ -125,28 +125,21 @@ class _MultipleReburshipmentState extends State<MultipleReburshipment> {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: AppButton(
             text: StringConstant.addToReportText,
-            onPressed: () {
+            onPressed: () async {
               if (_multipleReburshipmentController
                   .reburshipmentList.isNotEmpty) {
-                AppPopUp.showPopUpDialog(context, () async {
-                  final existingList = await _multipleReburshipmentController
-                      .getReburshipmentReportList();
-                  final updatedList = existingList != null
-                      ? (List<Map<String, dynamic>>.from(existingList)
-                        ..addAll(
-                            _multipleReburshipmentController.reburshipmentList))
-                      : _multipleReburshipmentController.reburshipmentList;
-                  await SharedPreferenceHelper.save(
-                      SharedPreferenceHelper.reportReumburshipment,
-                      jsonEncode(updatedList));
-                  NavigationHelper.pop(context);
-                  NavigationHelper.pushReplacement(
-                      context, const ReportDetail());
-                },
-                    StringConstant.addToReportText,
-                    AddReportWidget(
-                      title: StringConstant.addReportSuccess,
-                    ));
+                final existingList = await _multipleReburshipmentController
+                    .getReburshipmentReportList();
+                final updatedList = existingList != null
+                    ? (List<Map<String, dynamic>>.from(existingList)
+                      ..addAll(
+                          _multipleReburshipmentController.reburshipmentList))
+                    : _multipleReburshipmentController.reburshipmentList;
+                await SharedPreferenceHelper.save(
+                    SharedPreferenceHelper.reportReumburshipment,
+                    jsonEncode(updatedList));
+                NavigationHelper.pop(context);
+                NavigationHelper.pushReplacement(context, const ReportDetail());
               }
             },
           ),

@@ -23,6 +23,7 @@ import 'package:remburshiment_app/widgets/app_button.dart';
 import 'package:remburshiment_app/widgets/app_card.dart';
 import 'package:remburshiment_app/widgets/app_date_picker.dart';
 import 'package:remburshiment_app/widgets/app_dropdown.dart';
+import 'package:remburshiment_app/widgets/app_loader.dart';
 import 'package:remburshiment_app/widgets/app_text.dart';
 import 'package:remburshiment_app/widgets/app_textfield.dart';
 
@@ -88,195 +89,241 @@ class _ReburshipmentRequestState extends State<ReburshipmentRequest> {
       child: Padding(
         padding:
             const EdgeInsets.only(left: 16, right: 16, top: 20, bottom: 12),
-        child: Column(
-          children: [
-            Visibility(
-              visible: !(widget.isEditDetailRequest ?? false),
-              child: GestureDetector(
-                onTap: () {
-                  NavigationHelper.push(
-                    context,
-                    const SelectTransaction(),
-                    onResult: (result) {
-                      _clearAllField();
+        child: Obx(
+          () => Visibility(
+            visible: !_controller.isFileUploadLoading.value,
+            replacement: Padding(
+              padding: const EdgeInsets.only(top: 50),
+              child: Center(
+                child: AppLoader(
+                  color: HexColor(ColorCode.primaryColor),
+                ),
+              ),
+            ),
+            child: Column(
+              children: [
+                Visibility(
+                  visible: !(widget.isEditDetailRequest ?? false),
+                  child: GestureDetector(
+                    onTap: () {
+                      NavigationHelper.push(
+                        context,
+                        const SelectTransaction(),
+                        onResult: (result) {
+                          _clearAllField();
+                        },
+                      );
                     },
-                  );
-                },
-                child: appCard(
-                  context,
-                  padding: const EdgeInsets.only(left: 26, right: 16),
-                  height: 62,
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      AppText(
-                        text: StringConstant.selectFromTransaction,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
+                    child: appCard(
+                      context,
+                      padding: const EdgeInsets.only(left: 26, right: 16),
+                      height: 62,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          AppText(
+                            text: StringConstant.selectFromTransaction,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                          ),
+                          Container(
+                            height: 30,
+                            width: 30,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: HexColor(ColorCode.primaryColor)),
+                            child: Image.asset(ImageConstant.arrowRightIcon),
+                          )
+                        ],
                       ),
-                      Container(
-                        height: 30,
-                        width: 30,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            color: HexColor(ColorCode.primaryColor)),
-                        child: Image.asset(ImageConstant.arrowRightIcon),
-                      )
-                    ],
+                    ),
                   ),
                 ),
-              ),
-            ),
-            Visibility(
-              visible: !(widget.isEditDetailRequest ?? false),
-              child: Padding(
-                padding: const EdgeInsets.only(top: 20),
-                child: AppText(
-                  text: StringConstant.orText.toUpperCase(),
-                  fontSize: 14,
-                  color: HexColor(ColorCode.greyColor),
-                  fontWeight: FontWeight.w400,
+                Visibility(
+                  visible: !(widget.isEditDetailRequest ?? false),
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 20),
+                    child: AppText(
+                      text: StringConstant.orText.toUpperCase(),
+                      fontSize: 14,
+                      color: HexColor(ColorCode.greyColor),
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            Visibility(
-                visible: !(widget.isEditDetailRequest ?? false),
-                child: const FileUploadWidget()),
-            AppTextfield(
-              controller: _controller.walletController,
-              fillColor: HexColor(ColorCode.borderColor).withOpacity(0.4),
-              hintText: StringConstant.walletText,
-            ),
-            AppTextfield(
-              controller: _controller.addAmountController,
-              keyboardType: TextInputType.number,
-              prefixIcon: AppText(
-                text: StringConstant.currencySymbol,
-                fontSize: 20,
-                fontWeight: FontWeight.w400,
-              ),
-              hintText: StringConstant.addAmountText,
-            ),
-            Obx(
-              () => AppDropdown(
-                  options: StringConstant.selectCategoryOption,
-                  onChanged: (value) {
-                    _controller.selectedCategory.value = value;
-                  },
-                  selectedOption: _controller.selectedCategory.value,
-                  placeholder: StringConstant.selectCategory),
-            ),
-            AppTextfield(
-              hintText: StringConstant.purPoseText,
-              controller: _controller.purposeController,
-            ),
-            AppTextfield(
-              controller: _controller.mearchantController,
-              hintText: StringConstant.marchantName,
-            ),
-            Obx(() => AppDatePicker(
-                  hintTextDate: StringConstant.dateText,
-                  onDateSelected: (date) {
-                    _controller.selectedDate.value = date.toString();
-                  },
-                  defaultDate: _controller.selectedDate.value,
-                )),
-            AppTextfield(
-              controller: _controller.remarkController,
-              maxLines: 4,
-              hintText: StringConstant.remarkText,
-            ),
-            Obx(
-              () => AppButton(
-                isLoading: _controller.isLoading.value,
-                text: (widget.isEditDetailRequest ?? false)
-                    ? StringConstant.addToReportText
-                    : StringConstant.saveBtnText,
-                onPressed: () async {
-                  if ((widget.isEditDetailRequest ?? false)) {
-                    AppPopUp.showPopUpDialog(context, () async {
-                      final data = {
-                        "id": widget.data?['id'],
-                        "wallet": _controller.walletController.text,
-                        "addAmount": _controller.addAmountController.text,
-                        "purpose": _controller.purposeController.text,
-                        "mearchant": _controller.mearchantController.text,
-                        "remark": _controller.remarkController.text,
-                        "selectedDate": _controller.selectedDate.value,
-                        "selectedCategory": _controller.selectedCategory.value,
-                      };
-                      final existingList =
-                          await _controller.getReburshipmentReportList();
-                      final updatedList = existingList != null
-                          ? (List<Map<String, dynamic>>.from(existingList)
-                            ..add(data))
-                          : [data];
-                      await SharedPreferenceHelper.save(
-                          SharedPreferenceHelper.reportReumburshipment,
-                          jsonEncode(updatedList));
-                      NavigationHelper.pop(context);
-                      NavigationHelper.pushReplacement(
-                          context, const ReportDetail());
-                    },
-                        StringConstant.addToReportText,
-                        AddReportWidget(
-                          title: StringConstant.addReportSuccess,
-                        ));
-                  } else {
-                    _controller.isLoading.value = true;
-                    if (_controller.addAmountController.text != "" &&
-                        _controller.mearchantController.text != '' &&
-                        _controller.addAmountController.text != '' &&
-                        _controller.purposeController.text != '' &&
-                        _controller.walletController.text != '' &&
-                        _controller.selectedCategory.value != '' &&
-                        _controller.selectedDate.value != '') {
-                      final data = {
-                        "id": StringConstant.uuid.v4(),
-                        "wallet": _controller.walletController.text,
-                        "addAmount": _controller.addAmountController.text,
-                        "purpose": _controller.purposeController.text,
-                        "mearchant": _controller.mearchantController.text,
-                        "remark": _controller.remarkController.text,
-                        "selectedDate": _controller.selectedDate.value,
-                        "selectedCategory": _controller.selectedCategory.value,
-                      };
+                Visibility(
+                    visible: !(widget.isEditDetailRequest ?? false),
+                    child: FileUploadWidget(
+                      reburshimentRequestViewModel: _controller,
+                      onBillProcessed: (billData) {
+                        AppLogger.error('$billData');
+                        if (billData.isNotEmpty) {
+                          setState(() {
+                            _controller.walletController.text =
+                                billData['Wallet'] ?? '';
+                            final rawAmount = billData['Add Amount'] ?? '';
+                            final cleanedAmount =
+                                rawAmount.replaceAll(RegExp(r'[^\d.]'), '');
+                            _controller.addAmountController.text =
+                                cleanedAmount;
+                            _controller.purposeController.text =
+                                billData['Purpose'] ?? '';
+                            _controller.mearchantController.text =
+                                billData['Meracht'] ?? '';
+                            _controller.remarkController.text =
+                                billData['Remark'] ?? '';
+                            _controller.selectedCategory.value =
+                                billData['Selected Category'] ?? '';
+                            _controller.selectedDate.value =
+                                billData['Selected Date'] ?? '';
+                          });
+                          AppToast.showInfoToast(
+                              context, 'Bill uploaded successfully!');
+                        } else {
+                          AppToast.showErrorToast(
+                              context, 'Please upload a valid bill.');
+                        }
+                      },
+                    )),
+                AppTextfield(
+                  controller: _controller.walletController,
+                  fillColor: HexColor(ColorCode.borderColor).withOpacity(0.4),
+                  hintText: StringConstant.walletText,
+                ),
+                AppTextfield(
+                  controller: _controller.addAmountController,
+                  keyboardType: TextInputType.number,
+                  prefixIcon: AppText(
+                    text: StringConstant.currencySymbol,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w400,
+                  ),
+                  hintText: StringConstant.addAmountText,
+                ),
+                Obx(
+                  () => AppDropdown(
+                      options: StringConstant.selectCategoryOption,
+                      onChanged: (value) {
+                        _controller.selectedCategory.value = value;
+                      },
+                      selectedOption: _controller.selectedCategory.value,
+                      placeholder: StringConstant.selectCategory),
+                ),
+                AppTextfield(
+                  hintText: StringConstant.purPoseText,
+                  controller: _controller.purposeController,
+                ),
+                AppTextfield(
+                  controller: _controller.mearchantController,
+                  hintText: StringConstant.marchantName,
+                ),
+                Obx(() => AppDatePicker(
+                      hintTextDate: StringConstant.dateText,
+                      onDateSelected: (date) {
+                        _controller.selectedDate.value = date.toString();
+                      },
+                      defaultDate: _controller.selectedDate.value,
+                    )),
+                AppTextfield(
+                  controller: _controller.remarkController,
+                  maxLines: 4,
+                  hintText: StringConstant.remarkText,
+                ),
+                Obx(
+                  () => AppButton(
+                    isLoading: _controller.isLoading.value,
+                    text: (widget.isEditDetailRequest ?? false)
+                        ? StringConstant.addToReportText
+                        : StringConstant.saveBtnText,
+                    onPressed: () async {
+                      if ((widget.isEditDetailRequest ?? false)) {
+                        AppPopUp.showPopUpDialog(context, () async {
+                          final data = {
+                            "id": widget.data?['id'],
+                            "wallet": _controller.walletController.text,
+                            "addAmount": _controller.addAmountController.text,
+                            "purpose": _controller.purposeController.text,
+                            "mearchant": _controller.mearchantController.text,
+                            "remark": _controller.remarkController.text,
+                            "selectedDate": _controller.selectedDate.value,
+                            "selectedCategory":
+                                _controller.selectedCategory.value,
+                          };
+                          final existingList =
+                              await _controller.getReburshipmentReportList();
+                          final updatedList = existingList != null
+                              ? (List<Map<String, dynamic>>.from(existingList)
+                                ..add(data))
+                              : [data];
+                          await SharedPreferenceHelper.save(
+                              SharedPreferenceHelper.reportReumburshipment,
+                              jsonEncode(updatedList));
+                          NavigationHelper.pop(context);
+                          NavigationHelper.pushReplacement(
+                              context, const ReportDetail());
+                        },
+                            StringConstant.addToReportText,
+                            AddReportWidget(
+                              title: StringConstant.addReportSuccess,
+                            ));
+                      } else {
+                        _controller.isLoading.value = true;
+                        if (_controller.addAmountController.text != "" &&
+                            _controller.mearchantController.text != '' &&
+                            _controller.addAmountController.text != '' &&
+                            _controller.purposeController.text != '' &&
+                            _controller.walletController.text != '' &&
+                            _controller.selectedCategory.value != '' &&
+                            _controller.selectedDate.value != '') {
+                          final data = {
+                            "id": StringConstant.uuid.v4(),
+                            "wallet": _controller.walletController.text,
+                            "addAmount": _controller.addAmountController.text,
+                            "purpose": _controller.purposeController.text,
+                            "mearchant": _controller.mearchantController.text,
+                            "remark": _controller.remarkController.text,
+                            "selectedDate": _controller.selectedDate.value,
+                            "selectedCategory":
+                                _controller.selectedCategory.value,
+                          };
 
-                      try {
-                        await Future.delayed(const Duration(seconds: 2));
-                        final existingList =
-                            await _controller.getReburshipmentList();
-                        final updatedList = existingList != null
-                            ? (List<Map<String, dynamic>>.from(existingList)
-                              ..add(data))
-                            : [data];
-                        await SharedPreferenceHelper.save(
-                            SharedPreferenceHelper.storeReumburshipment,
-                            jsonEncode(updatedList));
-                        _controller.isLoading.value = false;
-                        _clearAllField();
-                        // ignore: use_build_context_synchronously
-                        NavigationHelper.push(
-                          context,
-                          const MultipleReburshipment(),
-                          onResult: (result) {
+                          try {
+                            await Future.delayed(const Duration(seconds: 2));
+                            final existingList =
+                                await _controller.getReburshipmentList();
+                            final updatedList = existingList != null
+                                ? (List<Map<String, dynamic>>.from(existingList)
+                                  ..add(data))
+                                : [data];
+                            await SharedPreferenceHelper.save(
+                                SharedPreferenceHelper.storeReumburshipment,
+                                jsonEncode(updatedList));
+                            _controller.isLoading.value = false;
                             _clearAllField();
-                          },
-                        );
-                      } catch (e) {
-                        AppLogger.error(e.toString());
-                        _controller.isLoading.value = false;
+                            // ignore: use_build_context_synchronously
+                            NavigationHelper.push(
+                              context,
+                              const MultipleReburshipment(),
+                              onResult: (result) {
+                                _clearAllField();
+                              },
+                            );
+                          } catch (e) {
+                            AppLogger.error(e.toString());
+                            _controller.isLoading.value = false;
+                          }
+                        } else {
+                          _controller.isLoading.value = false;
+                          AppToast.showErrorToast(
+                              context, StringConstant.formEmptyText);
+                        }
                       }
-                    } else {
-                      _controller.isLoading.value = false;
-                      AppToast.showErrorToast(
-                          context, StringConstant.formEmptyText);
-                    }
-                  }
-                },
-              ),
-            )
-          ],
+                    },
+                  ),
+                )
+              ],
+            ),
+          ),
         ),
       ),
     ));

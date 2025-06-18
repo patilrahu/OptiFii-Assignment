@@ -161,7 +161,7 @@ class _ReburshipmentRequestState extends State<ReburshipmentRequest> {
                           setState(() {
                             _controller.walletController.text =
                                 billData['Wallet'] ?? '';
-                            final rawAmount = billData['Add Amount'] ?? '';
+                            final rawAmount = billData['Amount'] ?? '';
                             final cleanedAmount =
                                 rawAmount.replaceAll(RegExp(r'[^\d.]'), '');
                             _controller.addAmountController.text =
@@ -169,13 +169,13 @@ class _ReburshipmentRequestState extends State<ReburshipmentRequest> {
                             _controller.purposeController.text =
                                 billData['Purpose'] ?? '';
                             _controller.mearchantController.text =
-                                billData['Meracht'] ?? '';
+                                billData['Merchant Name'] ?? '';
                             _controller.remarkController.text =
                                 billData['Remark'] ?? '';
                             _controller.selectedCategory.value =
-                                billData['Selected Category'] ?? '';
+                                billData['Category'] ?? '';
                             _controller.selectedDate.value =
-                                billData['Selected Date'] ?? '';
+                                billData['Date'] ?? '';
                           });
                           AppToast.showInfoToast(
                               context, 'Bill uploaded successfully!');

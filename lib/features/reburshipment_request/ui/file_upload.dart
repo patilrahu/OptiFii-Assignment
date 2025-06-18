@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
@@ -14,7 +16,7 @@ import 'package:remburshiment_app/widgets/app_text.dart';
 
 class FileUploadWidget extends StatefulWidget {
   ReburshimentRequestViewModel reburshimentRequestViewModel;
-  final void Function(Map<String, String>) onBillProcessed;
+  final void Function(Map<String, dynamic>) onBillProcessed;
   FileUploadWidget(
       {super.key,
       required this.reburshimentRequestViewModel,
@@ -29,13 +31,24 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
     widget.reburshimentRequestViewModel.isFileUploadLoading.value = true;
     final file = await UploadBill.pickBillImage();
     if (file != null) {
-      Map<String, String> fetchText = await UploadBill.processBillImage(file);
-      widget.onBillProcessed(fetchText);
+      String fetchText = await UploadBill.processBillImage(file);
+      var data = await UploadBill.getDataUsingAi(fetchText);
+      widget.onBillProcessed(json.decode(_removeString(data)));
       widget.reburshimentRequestViewModel.isFileUploadLoading.value = false;
     } else {
       widget.reburshimentRequestViewModel.isFileUploadLoading.value = false;
       AppLogger.error("No image selected.");
     }
+  }
+
+  String _removeString(String text) {
+    final cleaned = text
+        .replaceAll(RegExp(r'I/flutter.*?:\s*'), '')
+        .replaceAll('```json', '')
+        .replaceAll('```', '')
+        .replaceAll('-------->', '')
+        .trim();
+    return cleaned;
   }
 
   @override
@@ -78,9 +91,11 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
                             .value = true;
 
                         if (selectedImage != null) {
-                          Map<String, String> fetchText =
+                          String fetchText =
                               await UploadBill.processBillImage(selectedImage);
-                          widget.onBillProcessed(fetchText);
+                          var data = await UploadBill.getDataUsingAi(fetchText);
+                          widget.onBillProcessed(
+                              json.decode(_removeString(data)));
                           widget.reburshimentRequestViewModel
                               .isFileUploadLoading.value = false;
                         } else {

@@ -57,6 +57,7 @@ class UploadBill {
       Content.text(
           "Extract Amount, Merchant, Date, Category, Merchant Name, Wallet,Purpose ,Remark from:\n$receiptText make json object.")
     ]);
+    print(response.text);
     return response.text.toString();
   }
 }

@@ -162,8 +162,9 @@ class _ReburshipmentRequestState extends State<ReburshipmentRequest> {
                             _controller.walletController.text =
                                 billData['Wallet'] ?? '';
                             final rawAmount = billData['Amount'] ?? '';
-                            final cleanedAmount =
-                                rawAmount.replaceAll(RegExp(r'[^\d.]'), '');
+                            final cleanedAmount = rawAmount
+                                .toString()
+                                .replaceAll(RegExp(r'[^\d.]'), '');
                             _controller.addAmountController.text =
                                 cleanedAmount;
                             _controller.purposeController.text =

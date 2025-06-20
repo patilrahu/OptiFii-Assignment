@@ -12,6 +12,7 @@ import 'package:remburshiment_app/helper/permission_helper.dart';
 import 'package:remburshiment_app/helper/upload_bill.dart';
 import 'package:remburshiment_app/utils/app_logger.dart';
 import 'package:remburshiment_app/utils/app_navigation.dart';
+import 'package:remburshiment_app/utils/app_toast.dart';
 import 'package:remburshiment_app/widgets/app_text.dart';
 
 class FileUploadWidget extends StatefulWidget {
@@ -31,10 +32,15 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
     widget.reburshimentRequestViewModel.isFileUploadLoading.value = true;
     final file = await UploadBill.pickBillImage();
     if (file != null) {
-      String fetchText = await UploadBill.processBillImage(file);
-      var data = await UploadBill.getDataUsingAi(fetchText);
-      widget.onBillProcessed(json.decode(_removeString(data)));
-      widget.reburshimentRequestViewModel.isFileUploadLoading.value = false;
+      try {
+        String fetchText = await UploadBill.processBillImage(file);
+        var data = await UploadBill.getDataUsingAi(fetchText);
+        widget.onBillProcessed(json.decode(_removeString(data)));
+        widget.reburshimentRequestViewModel.isFileUploadLoading.value = false;
+      } catch (e) {
+        widget.reburshimentRequestViewModel.isFileUploadLoading.value = false;
+        AppToast.showErrorToast(context, 'Please pick proper image.');
+      }
     } else {
       widget.reburshimentRequestViewModel.isFileUploadLoading.value = false;
       AppLogger.error("No image selected.");
@@ -91,13 +97,22 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
                             .value = true;
 
                         if (selectedImage != null) {
-                          String fetchText =
-                              await UploadBill.processBillImage(selectedImage);
-                          var data = await UploadBill.getDataUsingAi(fetchText);
-                          widget.onBillProcessed(
-                              json.decode(_removeString(data)));
-                          widget.reburshimentRequestViewModel
-                              .isFileUploadLoading.value = false;
+                          try {
+                            String fetchText =
+                                await UploadBill.processBillImage(
+                                    selectedImage);
+                            var data =
+                                await UploadBill.getDataUsingAi(fetchText);
+                            widget.onBillProcessed(
+                                json.decode(_removeString(data)));
+                            widget.reburshimentRequestViewModel
+                                .isFileUploadLoading.value = false;
+                          } catch (e) {
+                            widget.reburshimentRequestViewModel
+                                .isFileUploadLoading.value = false;
+                            AppToast.showErrorToast(
+                                context, 'Please click proper image.');
+                          }
                         } else {
                           widget.reburshimentRequestViewModel
                               .isFileUploadLoading.value = false;
